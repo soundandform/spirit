@@ -3,9 +3,6 @@
 local SVF = {}
 
 
-
-
-
 function SVF:new ()
 
 	local obj = { low = 0.; mid = 0.; high = 0. }
