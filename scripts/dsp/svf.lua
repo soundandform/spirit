@@ -1,4 +1,5 @@
 -- svf.lua
+-- License
 
 local SVF = {}
 
@@ -14,7 +15,8 @@ function SVF:new ()
 end
 
 
-function  SVF:GenerateCoeffs  (i_sampleRate, i_frequency, i_q)
+function  SVF:GetCoeffs  (i_sampleRate, i_frequency, i_q)
+
     local coeffs = {}
 
     coeffs.f = 2. * math.sin (math.pi * i_frequency / i_sampleRate)
@@ -27,10 +29,11 @@ end
 
 function  SVF:Render  (i_coeffs, i_input)
 
-    m_band [1] = (i_coeffs.nfq * m_band [2]);							
-	m_band [0] = (i_coeffs.f * m_band [1]);								
-	m_band [2] = m_band [0] * i_coeffs.oneOverQ + m_band [1] - i_input;
+    self.mid = (i_coeffs.nfq * self.high);							
+	self.low = (i_coeffs.f * self.mid);								
+	self.high = self.low * i_coeffs.oneOverQ + self.mid - i_input;
 
+	return self
 end
 
 

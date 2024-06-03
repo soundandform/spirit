@@ -1,30 +1,30 @@
 -- lowpass.lua
 
-	LowPass = {}
 
+LowPass = {}
 
-function LowPass:new (o)
+function LowPass:new ()
 -----------------------------------------------------------------------------------------
-	local o = { s = 0; c = 0; _1c = 0; }
+	local o = { 0 }
 
 	setmetatable (o, self); self.__index = self
 	return o
 end
 
-function LowPass:Set (i_sampleRate, i_frequency)
------------------------------------------------------------------------------------------
-	local x = 2. * math.pi * i_frequency/i_sampleRate;
-	local c = (2. - math.cos(x)) - math.sqrt (math.pow (2. - math.cos(x), 2.) - 1.)
 
-	self.c = c	
-	self._1c = 1. - c
+function LowPass:GetCoeffs (i_sampleRate, i_frequency)
+-----------------------------------------------------------------------------------------
+	local x = 2. * math.pi * i_frequency / i_sampleRate;
+	local c = (2. - math.cos (x)) - math.sqrt (math.pow (2. - math.cos (x), 2.) - 1.)
+
+	return { c, 1. - c }
 end
 
 
-function LowPass:Render (i)
+function LowPass:Render (i_coeffs, i)
 -----------------------------------------------------------------------------------------
-	self.s = self.s * self.c + i * self._1c;
-	return self.s
+	self [1] = self [1] * i_coeffs [1] + i * i_coeffs [2]
+	return self [1]
 end
 
 
