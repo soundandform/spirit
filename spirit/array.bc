@@ -1,0 +1,24 @@
+-- BYTECODE -- array.lua:5-15
+0001    TNEW     2   0
+0002    GSET     2   0      ; "array"
+0003    IST          1
+0004    JMP      2 => 0006
+0005    KSHORT   1   0
+0006 => KSHORT   2   1
+0007    MOV      3   1
+0008    KSHORT   4   1
+0009    FORI     2 => 0014
+0010 => GGET     6   0      ; "array"
+0011    KSHORT   7   0
+0012    TSETV    7   6   5
+0013    FORL     2 => 0010
+0014 => GGET     2   0      ; "array"
+0015    RET1     2   2
+
+-- BYTECODE -- array.lua:0-18
+0001    TNEW     0   0
+0002    FNEW     1   1      ; array.lua:5
+0003    TSETS    1   0   0  ; "new"
+0004    UCLO     0 => 0005
+0005 => RET1     0   2
+
