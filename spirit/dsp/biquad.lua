@@ -1,7 +1,4 @@
 -- biquad.lua
-
-
-
 local Biquad = {}
 
 
@@ -29,11 +26,26 @@ function NormalizeCoefficients (b0,b1,b2,a0,a1,a2)
 end
 
 
+function Sine (i_sampleRate, i_frequency)
+	local w0 = 2. * math.pi * i_frequency / i_sampleRate
+	return math.sin (w0)
+end
+
+function Cosine (i_sampleRate, i_frequency)
+	local w0 = 2. * math.pi * i_frequency / i_sampleRate
+	return math.cos (w0)
+end
+
+
+function Alpha (i_sampleRate, i_frequency, i_q)
+	return Sine (i_sampleRate, i_frequency) / (2. * i_q)
+end
+
+
 function  Biquad:GetCoeffs_LowPass  (i_sampleRate, i_frequency, i_q)
 
-	local w0 = 2. * math.pi * i_frequency / i_sampleRate
-	local cosine = math.cos (w0)
-	local alpha = math.sin (w0) / (2. * i_q)
+	local cosine = Cosine (i_sampleRate, i_frequency)
+	local alpha = Alpha (i_sampleRate, i_frequency, i_q)
 
 	local b0, b1, b2, a0, a1, a2
 
@@ -48,7 +60,46 @@ function  Biquad:GetCoeffs_LowPass  (i_sampleRate, i_frequency, i_q)
 end
 
 
-function  Biquad:Render  (i_coeffs, i_input)
+function  Biquad:GetCoeffs_Peaking  (i_sampleRate, i_frequency, i_q, i_gain)
+
+	local cosine = Cosine (i_sampleRate, i_frequency)
+	local alpha = Alpha (i_sampleRate, i_frequency, i_q)
+	local A = math.sqrt (i_gain);
+		
+	local b0, b1, b2, a0, a1, a2;
+
+	b0 =  1. + alpha * A;
+	b1 = -2. * cosine;
+	b2 =  1. - alpha * A;
+	a0 =  1. + alpha / A;
+	a1 = -2. * cosine;
+	a2 =  1. - alpha / A;
+
+	return NormalizeCoefficients (b0, b1, b2, a0, a1, a2)
+end
+
+
+
+function  Biquad:GetCoeffs_Notch  (i_sampleRate, i_frequency, i_q, i_gain)
+
+	local cosine = Cosine (i_sampleRate, i_frequency)
+	local alpha = Alpha (i_sampleRate, i_frequency, i_q)
+		
+	local b0, b1, b2, a0, a1, a2;
+
+	b0 =  1.;
+	b1 = -2. * cosine;
+	b2 =  1.;
+	a0 =  1. + alpha;
+	a1 = -2. * cosine;
+	a2 =  1. - alpha;
+
+	return NormalizeCoefficients (b0, b1, b2, a0, a1, a2)
+end
+
+----------------------------------------------------------------------------------------------------------------------------------------
+
+function  Biquad:RenderDFI  (i_coeffs, i_input) -- direct form I
 
 	local out = i_input * i_coeffs.c0
 
@@ -66,6 +117,16 @@ function  Biquad:Render  (i_coeffs, i_input)
 	return out
 end
 
+
+function  Biquad:Render  (i_coeffs, i_input)	-- transposed direct form II (https://www.earlevel.com/main/2003/02/28/biquads/)
+
+	local out = i_input * i_coeffs.c0 + self.y2
+
+	self.y2 = self.y1 + i_coeffs.c1 * i_input - i_coeffs.c3 * out
+	self.y1 = i_coeffs.c2 * i_input - i_coeffs.c4 * out
+
+	return out
+end
 
 return Biquad
 
