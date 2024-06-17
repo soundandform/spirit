@@ -2,7 +2,7 @@
 
 local Array = {}
 
-function Array:new (length)
+Array.array = function (length)
 
 	array = {}
 
@@ -12,6 +12,13 @@ function Array:new (length)
 	end
 
 	return array
+end
+
+
+Array.array = function c_array (type, length)
+
+	local samples = ffi.new ('double [?]', bufferSize * channels)
+	return samples
 end
 
 return Array 
