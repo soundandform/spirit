@@ -48,6 +48,8 @@ local info = ffi.new "SF_INFO"
 
 function LibSndFile:read (i_path)
 
+	i_path = i_path or ""
+
 
 	local stream = 
 	{
