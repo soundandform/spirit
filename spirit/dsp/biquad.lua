@@ -4,12 +4,22 @@ local Biquad = {}
 
 function Biquad:new ()
 
-	local obj = { y1= 0, y2= 0, x1= 0, x2= 0 }
+	local obj = {}
 
 	setmetatable (obj, self)
 	self.__index = self
 
+	obj:Reset ()
+
 	return obj
+end
+
+
+function Biquad:Reset ()
+	self.y1= 0
+ 	self.y2= 0
+ 	self.x1= 0
+ 	self.x2= 0
 end
 
 
