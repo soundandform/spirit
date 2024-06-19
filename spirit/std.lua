@@ -17,7 +17,7 @@ function  Array:array  (length)
 end
 
 
-function  Array:cArray  (i_length, i_type)
+function  Array:cArray  (i_type, i_length)
 
 	i_type = i_type or 'f64'
 
@@ -33,7 +33,7 @@ function Array:cArrayFromTable (i_table, i_type)
 
 	i_type = i_type or 'f64'
 
-	local array = self:cArray (#i_table, i_type)
+	local array = self:cArray (i_type, #i_table)
 	for i = 1,#i_table do
 		array [i-1] = i_table [i]
 	end
