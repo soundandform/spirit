@@ -17,24 +17,41 @@ function  Array:array  (length)
 end
 
 
-function  Array:cArray  (type, i_length)
+function  Array:cArray  (i_length, i_type)
 
-	if (type == "f64") then type = "double" end
-	if (type == "f32") then type = "float" end
+	i_type = i_type or 'f64'
 
-	local samples = ffi.new (type .. '[?]', i_length)
+	if (i_type == "f64") then i_type = "double" end
+	if (i_type == "f32") then i_type = "float" end
+
+	local samples = ffi.new (i_type .. '[?]', i_length)
 	return samples
 end
 
 
-function Array:cArrayFromTable (i_table)
+function Array:cArrayFromTable (i_table, i_type)
 
-	local array = self:cArray ('f64', #i_table)
+	i_type = i_type or 'f64'
+
+	local array = self:cArray (#i_table, i_type)
 	for i = 1,#i_table do
 		array [i-1] = i_table [i]
 	end
 
 	return array
 end
+
+
+function Array:cArrayToTable (i_array, i_length)
+
+	local table = {}
+	for i = 1,i_length do
+		table [i] = i_array [i-1]
+	end
+
+	return table
+end
+
+
 
 return Array 

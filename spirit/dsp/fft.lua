@@ -1,18 +1,23 @@
 -- fft.lua
 
+-- Using https://github.com/malfet/pocketfft
+-- TODO: add complex FFT
+
 local ffi = require ("ffi")
+local std = require ("spirit.std")
 
 ffi.cdef 
 [[
 
 typedef struct rfft_plan_i * rfft_plan;
 
-rfft_plan make_rfft_plan (size_t length);
-void destroy_rfft_plan (rfft_plan plan);
-int rfft_backward(rfft_plan plan, double c[], double fct);
-int rfft_forward(rfft_plan plan, double c[], double fct);
+rfft_plan 	make_rfft_plan 		(size_t length);
+void 		destroy_rfft_plan 	(rfft_plan plan);
 
-size_t rfft_length (rfft_plan plan);
+int 		rfft_backward		(rfft_plan plan, double c[], double fct);
+int			rfft_forward		(rfft_plan plan, double c[], double fct);
+
+size_t 		rfft_length 		(rfft_plan plan);
 
 ]]
 
@@ -20,7 +25,7 @@ size_t rfft_length (rfft_plan plan);
 
 local FFT = {}
 
-function FFT:real (i_size)
+function  FFT:real  (i_size)
 
 	local obj = nil
 
@@ -34,10 +39,36 @@ function FFT:real (i_size)
 		setmetatable (obj, self)
 		self.__index = self
 	end
+
 	return obj
 end
 
 
+function  FFT:forward  (i_values, i_scale)
+
+	i_scale = i_scale or 1.
+	
+	if (type (i_values) == 'table') then
+		i_values = std:cArrayFromTable (i_values)
+	end
+
+	ffi.C.rfft_forward (self.fft, i_values, i_scale)
+
+	return std:cArrayToTable (i_values, self:size ())
+end
+
+
+function  FFT:inverse  (i_values, i_scale)
+
+	i_scale = i_scale or 1. / ffi.C.rfft_length (self.fft)
+
+	ffi.C.rfft_backward (self.fft, i_values, i_scale)
+end
+
+
+function  FFT:size  ()
+	return tonumber( ffi.C.rfft_length (self.fft))
+end
 
 
 return FFT
