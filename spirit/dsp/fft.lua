@@ -30,15 +30,20 @@ function  FFT:real  (i_size)
 	local obj = nil
 
 	if (type (i_size) == "number") then
-		local plan = ffi.C.make_rfft_plan (i_size)
+		
+		if (i_size > 0) then
+			local plan = ffi.C.make_rfft_plan (i_size)
+			print (i_size)
 
-		ffi.gc (plan, function (i_plan) ffi.C.destroy_rfft_plan (i_plan) end)
+			ffi.gc (plan, function (i_plan) ffi.C.destroy_rfft_plan (i_plan) end)
 
-		obj = { fft= plan }
+			obj = { fft= plan }
 
-		setmetatable (obj, self)
-		self.__index = self
+			setmetatable (obj, self)
+			self.__index = self
+		end
 	end
+
 
 	return obj
 end
@@ -46,15 +51,16 @@ end
 
 function  FFT:forward  (i_values, i_scale)
 
-	i_scale = i_scale or 1.
+	if i_values then
 	
-	if (type (i_values) == 'table') then
-		i_values = std:cArrayFromTable (i_values)
+		if (type (i_values) == 'table') then
+			i_values = std:cArrayFromTable (i_values)
+		end
+
+		ffi.C.rfft_forward (self.fft, i_values, i_scale or 1)
+
+		return std:cArrayToTable (i_values, self:size ())
 	end
-
-	ffi.C.rfft_forward (self.fft, i_values, i_scale)
-
-	return std:cArrayToTable (i_values, self:size ())
 end
 
 
