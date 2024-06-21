@@ -51,14 +51,12 @@ end
 
 function  FFT:forward  (i_values, i_scale)
 
-	if i_values then
-	
-		if (type (i_values) == 'table') then
-			i_values = std:cArrayFromTable (i_values)
-		end
+	if (type (i_values) == 'table') then
+		i_values = std:cArrayFromTable (i_values)
+	end
 
+	if (type (i_values) == 'cdata') then
 		ffi.C.rfft_forward (self.fft, i_values, i_scale or 1)
-
 		return std:cArrayToTable (i_values, self:size ())
 	end
 end

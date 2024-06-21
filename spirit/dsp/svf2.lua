@@ -1,6 +1,7 @@
--- svf2.lua
+-- svf2.lua  
+--https://cytomic.com/files/dsp/SvfLinearTrapOptimised2.pdf
 
-local SVF2 = {}
+local SVF2 = {}		
 
 function SVF2:new ()
 	local obj = {}
