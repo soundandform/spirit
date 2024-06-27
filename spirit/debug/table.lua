@@ -16,7 +16,9 @@ function TablePrinter:tprint (tbl, indent)
     if (type(k) == "number") then
       toprint = toprint .. "[" .. k .. "] = "
     elseif (type(k) == "string") then
-      toprint = toprint  .. k ..  "= "   
+      toprint = toprint  .. k ..  "= "
+  	else
+		toprint = toprint .. tostring (k) .. "= "
     end
 
     if (type(v) == "number") then
