@@ -99,6 +99,11 @@ function LibSndFile:read (i_path)
 
 	end
 
+	function stream:sampleRate ()
+		return tonumber (self.info.samplerate)
+	end
+
+
 	function stream:numChannels ()
 		return tonumber (self.info.channels)
 	end
