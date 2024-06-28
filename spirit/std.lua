@@ -1,6 +1,5 @@
 -- std.lua
 
-local ffi = require ("ffi")
 
 local Array = {}
 
@@ -16,6 +15,9 @@ function  Array:array  (length)
 	return array
 end
 
+
+--[[
+local ffi = require ("ffi")
 
 function  Array:cArray  (i_type, i_length)
 
@@ -51,6 +53,7 @@ function Array:cArrayToTable (i_array, i_length)
 
 	return table
 end
+]]--
 
 
 

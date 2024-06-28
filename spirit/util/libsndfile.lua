@@ -116,12 +116,16 @@ function LibSndFile:read (i_path)
 		return 0, self:numFrames ()
 	end
 
-	function stream:close ()
-		ffi.C.sf_close (self.sf)
-		self.sf = nil
-	end
+--	function stream:close ()
+--		ffi.C.sf_close (self.sf)
+--		self.sf = nil
+--	end
 
-	stream.sf = ffi.C.sf_open (i_path, 'SFM_READ', stream.info)
+	local sndfile = ffi.C.sf_open (i_path, 'SFM_READ', stream.info)
+
+	ffi.gc (sndfile, function (i_sndfile) ffi.C.sf_close (i_sndfile) end)
+
+	stream.sf = sndfile;
 
 	return stream
 
