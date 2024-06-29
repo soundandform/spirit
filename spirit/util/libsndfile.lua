@@ -87,8 +87,8 @@ function LibSndFile:read (i_path)
 				end
 
 			elseif (n == 0) then
-				ffi.C.sf_close (self.sf)
-				self.sf = nil
+		--		ffi.C.sf_close (self.sf)
+		--		self.sf = nil
 				n = -1
 			end
 
@@ -123,7 +123,7 @@ function LibSndFile:read (i_path)
 
 	local sndfile = ffi.C.sf_open (i_path, 'SFM_READ', stream.info)
 
-	ffi.gc (sndfile, function (i_sndfile) ffi.C.sf_close (i_sndfile) end)
+	ffi.gc (sndfile, function (i_sndfile)ffi.C.sf_close (i_sndfile) end)
 
 	stream.sf = sndfile;
 
