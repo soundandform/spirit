@@ -7,16 +7,9 @@ local Fifo = {}
 
 function Fifo:new (i_length)
 
-
---	local buffer = {}
-
 	i_length = i_length * 2
 
 	local array = CArray:new (i_length)
-
---	for i = 1,i_length do
---		buffer [i] = 0
---	end
 
 	local obj = { index= 1, [0]= array }
 
@@ -72,6 +65,13 @@ function  Fifo:__index  (i_index)
 	return self [0] [index + i_index - 1]
 end
 
+
+
+function Fifo:toCArray ()
+
+	return self [0]:slice (self.index, #self)
+
+end
 
 
 function Fifo:fir (i_array)
