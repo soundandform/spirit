@@ -1,18 +1,24 @@
 -- Circular Buffer 
 
+local CArray 	= require 'spirit.carray'
+
+
 local Fifo = {}
 
 function Fifo:new (i_length)
 
-	local buffer = {}
+
+--	local buffer = {}
 
 	i_length = i_length * 2
 
-	for i = 1,i_length do
-		buffer [i] = 0
-	end
+	local array = CArray:new (i_length)
 
-	local obj = { index= 1, [0]= buffer }
+--	for i = 1,i_length do
+--		buffer [i] = 0
+--	end
+
+	local obj = { index= 1, [0]= array }
 
 	obj.insert = self.insert
 
