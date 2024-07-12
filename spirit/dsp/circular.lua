@@ -14,6 +14,7 @@ function Fifo:new (i_length)
 	local obj = { index= 1, [0]= array }
 
 	obj.insert = self.insert
+	obj.toCArray = self.toCArray
 
 	setmetatable (obj, self)
 
