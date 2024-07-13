@@ -7,9 +7,7 @@ local Fifo = {}
 
 function Fifo:new (i_length)
 
-	i_length = i_length * 2
-
-	local array = CArray:new (i_length)
+	local array = CArray:new (i_length * 2)
 
 	local obj = { index= 1, [0]= array }
 
@@ -70,7 +68,8 @@ end
 
 function Fifo:toCArray ()
 
-	return self [0]:slice (self.index, #self)
+--	return self [0]
+	return self [0]:sliceCopy (self.index, #self [0] / 2) --#self)
 
 end
 
