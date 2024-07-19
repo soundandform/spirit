@@ -3,7 +3,7 @@
 local LibSndFile = {}
 
 local ffi 		= require "ffi"
-local CArray 	= require 'spirit.carray'
+local Array 	= require 'spirit.array'
 
 ffi.cdef [[
 
@@ -117,8 +117,8 @@ function LibSndFile:read (i_path)
 		return 0, self:numFrames ()
 	end
 
-	function stream:toCArray ()
-		local array = CArray:new (self:numFrames ())
+	function stream:toArray ()
+		local array = Array:new (self:numFrames ())
 		local reader = self:getReader ()
 
 		for i = 1, #array do

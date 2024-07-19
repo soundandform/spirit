@@ -1,18 +1,18 @@
 -- Circular Buffer 
 
-local CArray 	= require 'spirit.carray'
+local Array 	= require 'spirit.array'
 
 
 local Fifo = {}
 
 function Fifo:new (i_length)
 
-	local array = CArray:new (i_length * 2)
+	local array = Array:new (i_length * 2)
 
 	local obj = { index= 1, [0]= array }
 
 	obj.insert = self.insert
-	obj.toCArray = self.toCArray
+	obj.toArray = self.toArray
 
 	setmetatable (obj, self)
 
@@ -66,7 +66,7 @@ end
 
 
 
-function Fifo:toCArray ()
+function Fifo:toArray ()
 
 	return self [0]:sliceCopy (self.index, #self [0] / 2) --#self)
 
