@@ -28,7 +28,20 @@ end
 
 
 
+
+
+
+
+function  Lab:waveform  (i_uniqueIdOrName, i_source)
+
+	sluggo_waveform (i_uniqueIdOrName, i_source)
+
+end
+
+
 function Lab:plot (i_uniqueIdOrName, i_coordinates, i_axesOptions, i_optionalIndex)
+
+	-- TODO: convert CArrays to Tables
 
 	sluggo_plot (i_uniqueIdOrName, i_coordinates, i_axesOptions, i_optionalIndex)
 

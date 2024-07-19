@@ -2,7 +2,8 @@
 
 local LibSndFile = {}
 
-local ffi = require ("ffi")
+local ffi 		= require "ffi"
+local CArray 	= require 'spirit.carray'
 
 ffi.cdef [[
 
@@ -41,7 +42,7 @@ sf_count_t  	sf_seek         	(SNDFILE *sndfile, sf_count_t frames, int whence);
 local bufferSize = 1024
 
 
-local info = ffi.new "SF_INFO"
+--local info = ffi.new "SF_INFO"
 
 
 
@@ -116,6 +117,17 @@ function LibSndFile:read (i_path)
 		return 0, self:numFrames ()
 	end
 
+	function stream:toCArray ()
+		local array = CArray:new (self:numFrames ())
+		local reader = self:getReader ()
+
+		for i = 1, #array do
+			array [i] = reader ()
+		end
+
+		return array
+	end
+
 --	function stream:close ()
 --		ffi.C.sf_close (self.sf)
 --		self.sf = nil
@@ -123,7 +135,7 @@ function LibSndFile:read (i_path)
 
 	local sndfile = ffi.C.sf_open (i_path, 'SFM_READ', stream.info)
 
-	ffi.gc (sndfile, function (i_sndfile)ffi.C.sf_close (i_sndfile) end)
+	ffi.gc (sndfile, function (i_sndfile) ffi.C.sf_close (i_sndfile) end)
 
 	stream.sf = sndfile;
 

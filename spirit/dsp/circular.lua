@@ -68,7 +68,6 @@ end
 
 function Fifo:toCArray ()
 
---	return self [0]
 	return self [0]:sliceCopy (self.index, #self [0] / 2) --#self)
 
 end
