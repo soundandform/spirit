@@ -1,6 +1,5 @@
 -- biquad.lua
-local Biquad = {}
-
+local Biquad = {  }
 
 function Biquad:new ()
 
@@ -49,6 +48,24 @@ end
 
 function Alpha (i_sampleRate, i_frequency, i_q)
 	return Sine (i_sampleRate, i_frequency) / (2. * i_q)
+end
+
+
+function   Biquad:GetCoeffs_HighPass  (i_sampleRate, i_frequency, i_q)
+
+	local cosine = Cosine (i_sampleRate, i_frequency)
+	local alpha = Alpha (i_sampleRate, i_frequency, i_q)
+		
+	local b0, b1, b2, a0, a1, a2
+
+	b0 =  (1. + cosine) / 2.;
+	b1 = -(1. + cosine);
+	b2 =  (1. + cosine) / 2.;
+	a0 =   1. + alpha;
+	a1 =  -2. * cosine;
+	a2 =   1. - alpha;
+		
+	return NormalizeCoefficients(b0, b1, b2, a0, a1, a2);
 end
 
 

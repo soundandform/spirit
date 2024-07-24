@@ -32,9 +32,9 @@ end
 
 
 
-function  Lab:waveform  (i_uniqueIdOrName, i_source)
+function  Lab:waveform  (i_uniqueIdOrName, i_source, i_layer)
 
-	sluggo_waveform (i_uniqueIdOrName, i_source)
+	sluggo_waveform (i_uniqueIdOrName, i_source, i_layer)
 
 end
 

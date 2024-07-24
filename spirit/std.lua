@@ -1,9 +1,9 @@
 -- std.lua
 
 
-local Array = {}
+local Std = {}
 
-function  Array:array  (length)
+function  Std:array  (length)
 
 	array = {}
 
@@ -19,7 +19,7 @@ end
 --[[
 local ffi = require ("ffi")
 
-function  Array:cArray  (i_type, i_length)
+function  Std:cArray  (i_type, i_length)
 
 	i_type = i_type or 'f64'
 
@@ -31,7 +31,7 @@ function  Array:cArray  (i_type, i_length)
 end
 
 
-function Array:cArrayFromTable (i_table, i_type)
+function Std:cArrayFromTable (i_table, i_type)
 
 	i_type = i_type or 'f64'
 
@@ -44,7 +44,7 @@ function Array:cArrayFromTable (i_table, i_type)
 end
 
 
-function Array:cArrayToTable (i_array, i_length)
+function Std:cArrayToTable (i_array, i_length)
 
 	local table = {}
 	for i = 1,i_length do

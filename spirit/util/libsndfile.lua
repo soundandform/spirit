@@ -100,7 +100,7 @@ function LibSndFile:read (i_path)
 
 	end
 
-	function stream:sampleRate ()
+	function stream:getSampleRate ()
 		return tonumber (self.info.samplerate)
 	end
 
@@ -118,6 +118,7 @@ function LibSndFile:read (i_path)
 	end
 
 	function stream:toArray ()
+
 		local array = Array:new (self:numFrames ())
 		local reader = self:getReader ()
 
