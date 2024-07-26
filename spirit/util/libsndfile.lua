@@ -62,16 +62,25 @@ function LibSndFile:read (i_path)
 
 		local start = i_startIndex or 0
 
-		ffi.C.sf_seek (self.sf, start, 0)
+		start = ffi.C.sf_seek (self.sf, start, 0)
+		if (start == -1) then error ("error seeking sound file") end
 
-		local n = self:numFrames ()
+		local n = self:numFrames () - start
+
 		local channels = self:numChannels ()
 		local samples = ffi.new ('double [?]', bufferSize * channels)
 
 		local i = 0
 		ffi.C.sf_readf_double (self.sf, samples, bufferSize)
 
-		local reader = function ()
+		local reader = function (index)
+
+			if (type (index) == 'number') then
+				index = ffi.C.sf_seek (self.sf, index, 0)
+				if (index == -1) then error ("error seeking sound file") end
+				n = self:numFrames () - index
+			end
+			
 
 			local v = nil
 
@@ -87,10 +96,8 @@ function LibSndFile:read (i_path)
 					i = 0
 				end
 
-			elseif (n == 0) then
-		--		ffi.C.sf_close (self.sf)
-		--		self.sf = nil
-				n = -1
+--			elseif (n == 0) then
+--				n = -1
 			end
 
 			return v

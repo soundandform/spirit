@@ -106,6 +106,26 @@ function  Biquad:GetCoeffs_Peaking  (i_sampleRate, i_frequency, i_q, i_gain)
 end
 
 
+function  Biquad:GetCoeffs_HighShelf (i_sampleRate, i_frequency, i_q, i_gain)
+
+	local cosine = Cosine (i_sampleRate, i_frequency)
+	local alpha = Alpha (i_sampleRate, i_frequency, i_q)
+
+	local A = math.sqrt (i_gain);
+	local sqrtA = math.sqrt (A);
+		
+	local b0, b1, b2, a0, a1, a2;
+		
+	b0 =      A*( (A+1.0) + (A-1.0)*cosine + 2.0*sqrtA*alpha );
+	b1 = -2.0*A*( (A-1.0) + (A+1.0)*cosine                   );
+	b2 =      A*( (A+1.0) + (A-1.0)*cosine - 2.0*sqrtA*alpha );
+	a0 =          (A+1.0) - (A-1.0)*cosine + 2.0*sqrtA*alpha  ;
+	a1 =    2.0*( (A-1.0) - (A+1.0)*cosine                   );
+	a2 =          (A+1.0) - (A-1.0)*cosine - 2.0*sqrtA*alpha  ;
+		
+	return NormalizeCoefficients (b0, b1, b2, a0, a1, a2)
+end
+
 
 function  Biquad:GetCoeffs_Notch  (i_sampleRate, i_frequency, i_q, i_gain)
 
