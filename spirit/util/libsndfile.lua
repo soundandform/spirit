@@ -2,49 +2,12 @@
 
 local LibSndFile = {}
 
-local ffi 		= require "ffi"
 local Array 	= require 'spirit.array'
+local Libsndfile = require 'spirit.lib.sndfile'
 
-ffi.cdef [[
+--print ("libsndfile:", Libsndfile:version ())
 
-typedef int64_t sf_count_t;
-
-typedef struct 
-{	
-	sf_count_t	frames;
-	int			samplerate;
-	int			channels;
-	int			format;
-	int			sections;
-	int			seekable;
-} 
-SF_INFO;
-
-enum EMode
-{
-	SFM_READ	= 0x10,
-	SFM_WRITE	= 0x20,
-	SFM_RDWR	= 0x30
-};
-
-typedef void SNDFILE;
-
-const char * 	sf_version_string 	(void) ;
-void * 			sf_open				(const char * path, enum EMode mode, SF_INFO * sfinfo) ;
-int				sf_close			(SNDFILE * sndfile);
-
-sf_count_t		sf_readf_double		(SNDFILE * sndfile, double * ptr, sf_count_t frames) ;
-
-sf_count_t  	sf_seek         	(SNDFILE *sndfile, sf_count_t frames, int whence);
-
-]]
-
-local bufferSize = 1024
-
-
---local info = ffi.new "SF_INFO"
-
-
+local bufferSize = 4096
 
 
 function LibSndFile:read (i_path)
@@ -52,31 +15,29 @@ function LibSndFile:read (i_path)
 	i_path = i_path or ""
 
 
-	local stream = 
-	{
-		info = ffi.new "SF_INFO"
-	}
+	local stream = {}
 
 
 	function stream:getReader (i_startIndex)
 
 		local start = i_startIndex or 0
 
-		start = ffi.C.sf_seek (self.sf, start, 0)
+		start = self.sf:seek (start)
 		if (start == -1) then error ("error seeking sound file") end
 
 		local n = self:numFrames () - start
 
 		local channels = self:numChannels ()
-		local samples = ffi.new ('double [?]', bufferSize * channels)
+		local samples = Array:new (bufferSize * channels)
 
 		local i = 0
-		ffi.C.sf_readf_double (self.sf, samples, bufferSize)
+		self.sf:read (samples)
 
 		local reader = function (index)
 
 			if (type (index) == 'number') then
-				index = ffi.C.sf_seek (self.sf, index, 0)
+				--print ("sf seeking: ", index)
+				index = self.sf:seek (index)
 				if (index == -1) then error ("error seeking sound file") end
 				n = self:numFrames () - index
 			end
@@ -86,13 +47,13 @@ function LibSndFile:read (i_path)
 
 			if (n > 0) then
 
-				v = samples [i * channels]		-- pick off the first channel
+				v = samples [1 + i * channels]		-- pick off the first channel
 
 				i = i + 1
 				n = n - 1
 
 				if (i == bufferSize) then
-					ffi.C.sf_readf_double (self.sf, samples, bufferSize)
+					self.sf:read (samples)
 					i = 0
 				end
 
@@ -108,16 +69,16 @@ function LibSndFile:read (i_path)
 	end
 
 	function stream:getSampleRate ()
-		return tonumber (self.info.samplerate)
+		return self.sf:getInfo () ['samplerate']
 	end
 
 
 	function stream:numChannels ()
-		return tonumber (self.info.channels)
+		return self.sf:getInfo () ['channels']
 	end
 
 	function stream:numFrames ()
-		return tonumber (self.info.frames)
+		return self.sf:getInfo () ['frames']
 	end
 
 	function stream:bounds ()
@@ -127,25 +88,22 @@ function LibSndFile:read (i_path)
 	function stream:toArray ()
 
 		local array = Array:new (self:numFrames ())
-		local reader = self:getReader ()
-
-		for i = 1, #array do
-			array [i] = reader ()
-		end
+			
+		self.sf:seek (0)
+		self.sf:read (array)
 
 		return array
 	end
 
---	function stream:close ()
---		ffi.C.sf_close (self.sf)
---		self.sf = nil
---	end
+	function stream:close ()
+		local r,msg = self.sf:close ()
+		self.sf = nil
 
-	local sndfile = ffi.C.sf_open (i_path, 'SFM_READ', stream.info)
+		return r,msg
+	end
 
-	ffi.gc (sndfile, function (i_sndfile) ffi.C.sf_close (i_sndfile) end)
 
-	stream.sf = sndfile;
+	stream.sf = Libsndfile:open (i_path);
 
 	return stream
 
