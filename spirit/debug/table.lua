@@ -5,10 +5,25 @@ local TablePrinter = {}
 
 function TablePrinter:tprint (tbl, indent)
 
-  if not indent then indent = 0 end
+	if (self.printed [tbl]) then 
+		return "{ ... }";
+	else
+		self.printed [tbl] = true
+	end
 
-  local toprint = string.rep(" ", indent) .. "{\r\n"
-  indent = indent + 2 
+	indent = indent or 0
+
+	if (indent > 100) then return "* stack overflow\n" end
+
+	if next (tbl) == nil then
+		return "{}";
+	end
+	
+
+--  local toprint = string.rep(" ", indent) .. "{\r\n"
+  local toprint = "{\r\n"
+
+  indent = indent + 2
  
    for k, v in pairs(tbl) do
     toprint = toprint .. string.rep(" ", indent)
@@ -34,12 +49,15 @@ function TablePrinter:tprint (tbl, indent)
     end
   end
 
-  toprint = toprint .. string.rep(" ", indent-2) .. "}"
+  toprint = toprint .. string.rep(" ", indent-4) .. "}"
   return toprint
 
 end
 
 function TablePrinter:dump_table (table)
+
+	self.printed = {}
+
 
 	print ("------------------------------------------------")
 	print (self:tprint (table))
