@@ -13,6 +13,7 @@ function Fifo:new (i_length)
 
 	obj.insert = self.insert
 	obj.toArray = self.toArray
+	obj.fir = self.fir
 
 	setmetatable (obj, self)
 
@@ -58,8 +59,6 @@ function  Fifo:__index  (i_index)
 
 	local index = self.index
 	
---	print (index .. "  i : " .. i_index)
-
 
 	return self [0] [index + i_index - 1]
 end
@@ -77,10 +76,10 @@ function Fifo:fir (i_array)
 										-- assert (#i_array <= #self / 2)
 	local sum = 0
 
-	local index = self [0] - 1			-- -1 'cause i below starts at 1
+--	local index = self.index			-- -1 'cause i below starts at 1
 
 	for i = 1,#i_array do
-		sum = sum + self [index + i] * i_array [i]
+		sum = sum + self [i] * i_array [i]
 	end
 
 	return sum

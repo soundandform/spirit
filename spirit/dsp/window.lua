@@ -5,20 +5,46 @@ local Array 	= require 'spirit.array'
 local Window = {}
 
 
-function Window:Normalize (i_array)
+function Window:normalize (io_array, i_scaler)
+
+	i_scaler = i_scaler or 1
 
 	local sum = 0.
 
-	for i = 1,#i_array do
-		sum = sum + i_array [i]
+	for i = 1,#io_array do
+		sum = sum + io_array [i]
 	end
 
-	local normalizer = 1. / sum
+	local normalizer = i_scaler / sum
 
-	for i = 1,#i_array do
-		sum = sum * normalizer
+--	print (normalizer)
+
+	for i = 1,#io_array do
+		io_array [i] = io_array [i] * normalizer
 	end
 	
+end
+
+
+
+function Window:maximize (i_array, i_scaler)
+
+	i_scaler = i_scaler or 1
+
+	local max = 0
+
+	for i = 1,#i_array do
+		max = math.max (max, math.abs (i_array [i]))
+	end
+
+--	print ("max :", max)
+
+	local normal = i_scaler / max
+
+	for i = 1,#i_array do
+		i_array [i] = i_array [i] * normal
+	end
+
 
 end
 
@@ -34,9 +60,17 @@ function Window:BlackmanHarris (i_length)
 		array [i] = w
 	end
 
-	self:Normalize (array)
+	self:normalize (array)
 
 	return array
+end
+
+
+function Window:Apply (io_array, i_window)
+
+	for i=1,#i_window do
+		io_array [i] = io_array [i] * i_window [i]
+	end
 end
 
 
