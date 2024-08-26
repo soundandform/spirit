@@ -54,6 +54,7 @@ function TablePrinter:tprint (tbl, indent)
 
 end
 
+
 function TablePrinter:dump_table (table)
 
 	self.printed = {}
@@ -62,6 +63,13 @@ function TablePrinter:dump_table (table)
 	print ("------------------------------------------------")
 	print (self:tprint (table))
 
+	self.printed = nil
+
 end
+
+function TablePrinter:dump (table)
+	self:dump_table (table)
+end
+
 
 return TablePrinter

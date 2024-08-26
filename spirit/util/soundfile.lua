@@ -2,8 +2,8 @@
 
 local LibSndFile = {}
 
-local Array 	= require 'spirit.array'
-local Libsndfile = require 'spirit.lib.sndfile'
+local Array 		= require 'spirit.array'
+local Libsndfile 	= require 'spirit.lib.sndfile'
 
 --print ("libsndfile:", Libsndfile:version ())
 
@@ -85,9 +85,10 @@ function LibSndFile:read (i_path)
 		return 0, self:numFrames ()
 	end
 
-	function stream:toArray ()
+	function stream:toArray (i_type)
 
-		local array = Array:new (self:numFrames ())
+		i_type = i_type or 'f64'
+		local array = Array:new (i_type, self:numFrames ())
 			
 		self.sf:seek (0)
 		self.sf:read (array)
