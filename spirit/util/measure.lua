@@ -66,7 +66,7 @@ function Measure:FFTMagPhase (i_samples, i_sampleRate, i_options)
 			if (i ~= previ and i > 0) then
 
 				-- i = 1 refers to first fft bin which starts at ri [2] (r[1] is DC)
-				local real,imag = ri [1 + i*2], ri [1 + i*2+1]
+				local real,imag = ri [i*2], ri [i*2+1]
 
 				f [#f+1] = fstep * i
 				m [#m+1] = convert:gainTodB (math.sqrt (real * real + imag * imag))
