@@ -1,11 +1,13 @@
--- Circular Buffer 
+-- Contiguous Circular Buffer 
 
 local Array 	= require 'spirit.array'
 
+-- this is a 2x sized mirrored/concatenated (how to describe this?) FIFO, such that FIRs 
+-- and other operations on the buffer can be executed in one contiguous pass
 
-local Fifo = {}
+local Circular = {}
 
-function Fifo:new (i_length)
+function Circular:new (i_length)
 
 	local array = Array:new (i_length * 2)
 
@@ -22,7 +24,7 @@ end
 
 
 
-function Fifo:insert (i_value)
+function Circular:insert (i_value)
 
 	local index = self.index
 
@@ -50,12 +52,12 @@ function Fifo:insert (i_value)
 end
 
 
-function  Fifo:__len  ()
+function  Circular:__len  ()
 	return #self [0] / 2
 end
 
 
-function  Fifo:__index  (i_index)
+function  Circular:__index  (i_index)
 
 	local index = self.index
 	
@@ -65,14 +67,14 @@ end
 
 
 
-function Fifo:toArray ()
+function Circular:toArray ()
 
 	return self [0]:sliceCopy (self.index, #self [0] / 2) --#self)
 
 end
 
 
-function Fifo:fir (i_array)
+function Circular:fir (i_array)
 										-- assert (#i_array <= #self / 2)
 	local sum = 0
 
@@ -86,4 +88,4 @@ function Fifo:fir (i_array)
 end
 
 
-return Fifo 
+return Circular 

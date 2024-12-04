@@ -53,6 +53,8 @@ end
 
 function   Biquad:GetCoeffs_HighPass  (i_sampleRate, i_frequency, i_q)
 
+	i_q = i_q or .70710678118
+
 	local cosine = Cosine (i_sampleRate, i_frequency)
 	local alpha = Alpha (i_sampleRate, i_frequency, i_q)
 		
@@ -70,6 +72,8 @@ end
 
 
 function  Biquad:GetCoeffs_LowPass  (i_sampleRate, i_frequency, i_q)
+
+	i_q = i_q or .70710678118
 
 	local cosine = Cosine (i_sampleRate, i_frequency)
 	local alpha = Alpha (i_sampleRate, i_frequency, i_q)

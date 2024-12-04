@@ -37,5 +37,14 @@ function  SVF:Render  (i_coeffs, i_input)
 end
 
 
+function  SVF:Renderk  (i_coeffs, i_input)
+
+	self.low = self.low + (i_coeffs.f * self.mid);						
+	self.high = self.low * i_coeffs.oneOverQ + self.mid - i_input;
+    self.mid = self.mid + (i_coeffs.nfq * self.high);							
+
+	return self
+end
+
 return SVF
 

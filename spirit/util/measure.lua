@@ -4,6 +4,8 @@ local FFT 		= require 'spirit.dsp.fft'
 local convert	= require 'spirit.util.convert'
 local Array 	= require 'spirit.array'
 
+local misc		= require 'spirit.dsp.misc'
+
 
 local Measure = {}
 
@@ -33,7 +35,7 @@ function Measure:FFTMagPhase (i_samples, i_sampleRate, i_options)
 	i_options = i_options or {}
 	---------------------------------------------------------------------------------------------------------------------
 	local numPoints = i_options ['numPoints'] or 2000
-	local f1 		= i_options ['f1'] or 20
+	local f1 		= i_options ['f1'] or 10
 	local f2 		= i_options ['f2'] or 22000
 	---------------------------------------------------------------------------------------------------------------------
 
@@ -53,15 +55,17 @@ function Measure:FFTMagPhase (i_samples, i_sampleRate, i_options)
 	local fstep = i_sampleRate * .5 / halfFFTSize;
 	local previ = -1
 
+	local phase = misc:phase ()
+	local radToDeg = 180 / math.pi
 
 	f2 = math.min (i_sampleRate * .5, f2)
 
 	if (f2 > f1) then
-		for p = 0, numPoints-1 do
+		for n = 0, numPoints-1 do
 
-			local nextFreq = convert:linearToLog (p, 0, numPoints - 1, f1, f2)
+			local nextFreq = convert:linearToLog (n, 0, numPoints - 1, f1, f2)
 
-			local i = math.floor (nextFreq / fstep)									--	print (i)
+			local i = math.floor (nextFreq / fstep)
 
 			if (i ~= previ and i > 0) then
 
@@ -70,6 +74,7 @@ function Measure:FFTMagPhase (i_samples, i_sampleRate, i_options)
 
 				f [#f+1] = fstep * i
 				m [#m+1] = convert:gainTodB (math.sqrt (real * real + imag * imag))
+				p [#p+1] = phase:track (real, imag) * radToDeg
 
 				previ = i
 			end
