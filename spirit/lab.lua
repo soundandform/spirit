@@ -41,7 +41,53 @@ end
 
 function Lab:plot (i_uniqueIdOrName, i_coordinates, i_axesOptions, i_optionalIndex)
 
-	-- TODO: convert CArrays to Tables
+	-- TODO: convert CArray i_coordinates to Tables
+
+	if (type (i_coordinates) == 'function') then
+
+		local numPoints = 2000
+
+		local log = false
+		local x1, x2 = nil,nil
+
+		local xaxis = i_axesOptions ['x']
+		
+		for _,value in ipairs (xaxis) do
+			if (value == 'log') then log = true 
+			elseif (value == 'lin') then log = false
+			elseif (type (value) == 'number') then
+				if (not x1) then x1 = value 
+				elseif (not x2) then x2 = value
+				end
+			end
+		end
+
+		if (not x1) then error ("no start x value provided") end
+		if (not x2) then error ("no end x value provided") end
+	
+		print ("log: " .. tostring (log) .. " x1: " .. x1 .. "  x2: " .. x2)
+
+		local xx, yy = {}, {}
+		
+		for n=1,numPoints do
+
+			local x
+
+			if (log == true) then
+				x = convert:linearToLog (n-1, 0, numPoints - 1, x1, x2)
+			else
+				x = x1 + (x2 - x1) * (n - 1)/(numPoints - 1)
+			end
+
+			xx [#xx + 1] = x
+			yy [#yy + 1] = i_coordinates (x)
+
+--			print (x)
+		end
+
+		i_coordinates = { xx, yy }
+	end
+
 
 	sluggo_plot (i_uniqueIdOrName, i_coordinates, i_axesOptions, i_optionalIndex)
 
