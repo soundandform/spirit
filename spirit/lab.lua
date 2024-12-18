@@ -2,6 +2,7 @@
 
 local std = require ('spirit.std')
 local convert = require ('spirit.util.convert')
+require 'spirit.math.complex'
 
 local Lab = 
 {
@@ -36,6 +37,76 @@ function  Lab:waveform  (i_uniqueIdOrName, i_source, i_layer)
 
 	sluggo_waveform (i_uniqueIdOrName, i_source, i_layer)
 
+end
+
+
+function Lab._generateXCoordinates (i_axesOptions)
+
+	local numPoints = i_axesOptions.numPoints or 2000
+
+	local log = false
+	local x1, x2 = nil,nil
+
+	local xaxis = i_axesOptions ['x']
+		
+	for _,value in ipairs (xaxis) do
+		if (value == 'log') then log = true 
+		elseif (value == 'lin') then log = false
+		elseif (type (value) == 'number') then
+			if (not x1) then x1 = value 
+			elseif (not x2) then x2 = value
+			end
+		end
+	end
+
+	if (not x1) then error ("no start x value provided") end
+	if (not x2) then error ("no end x value provided") end
+	
+	print ("log: " .. tostring (log) .. " x1: " .. x1 .. "  x2: " .. x2)
+
+	local xx = {}
+		
+	for n=1,numPoints do
+
+		local x
+
+		if (log == true) then
+			x = convert:linearToLog (n-1, 0, numPoints - 1, x1, x2)
+		else
+			x = x1 + (x2 - x1) * (n - 1)/(numPoints - 1)
+		end
+
+		xx [#xx + 1] = x
+	end
+
+	return xx
+
+end
+
+
+function Lab:plotj (i_uniqueIdOrName, i_coordinates, i_sampleRate, i_axesOptions, i_optionalIndex)
+
+	if (type (i_coordinates) == 'function') then
+
+		local xx = self._generateXCoordinates (i_axesOptions)
+
+
+
+		local yy = {}
+
+		for _,x in ipairs (xx) do
+			local w = x/i_sampleRate * math.pi
+			
+			local y = i_coordinates (w);
+
+			yy [#yy + 1] = convert:gainTodB (y)
+		
+		end
+
+		i_coordinates = { xx, yy }
+	end
+
+	sluggo_plot (i_uniqueIdOrName, i_coordinates, i_axesOptions, i_optionalIndex)
 end
 
 
