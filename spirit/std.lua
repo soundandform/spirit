@@ -16,45 +16,59 @@ function  Std:array  (length)
 end
 
 
---[[
-local ffi = require ("ffi")
+function Std.checkVar (i_var, i_func)
 
-function  Std:cArray  (i_type, i_length)
+	local t = type (i_var)
 
-	i_type = i_type or 'f64'
+	if (t == 'number') then
+		return i_func (i_var)
+	elseif (t == 'userdata') then
 
-	if (i_type == "f64") then i_type = "double" end
-	if (i_type == "f32") then i_type = "float" end
+		for i=1,#i_var do
+			if (i_func (i_var [i])) then
+				return true
+			end
+ 		end
 
-	local samples = ffi.new (i_type .. '[?]', i_length)
-	return samples
-end
+	elseif (t == 'table') then
 
+		for _,value in ipairs (i_var) do
+			if (i_func (i_var [i])) then
+				return true
+			end
+		end
 
-function Std:cArrayFromTable (i_table, i_type)
-
-	i_type = i_type or 'f64'
-
-	local array = self:cArray (i_type, #i_table)
-	for i = 1,#i_table do
-		array [i-1] = i_table [i]
 	end
 
-	return array
+	return false
+
+end
+
+function Std._isNaN (i_var)
+	return type (i_var) == 'number' and i_var ~= i_var
+end
+
+function Std._isInf (i_var)
+	return type (i_var) == 'number' and (i_var == math.huge or i_var == -math.huge)
 end
 
 
-function Std:cArrayToTable (i_array, i_length)
 
-	local table = {}
-	for i = 1,i_length do
-		table [i] = i_array [i-1]
-	end
-
-	return table
+function Std:hasNaN (i_var)
+	return self.checkVar (i_var, self._isNaN)
 end
-]]--
+
+
+function Std:hasInf (i_var)
+	return self.checkVar (i_var, self._isInf)
+end
 
 
 
-return Array 
+function Std:isNaN (i_var)
+	return self._isNan (i_var)
+end
+
+
+
+return Std 
