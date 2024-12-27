@@ -62,7 +62,7 @@ function Lab._generateXCoordinates (i_axesOptions)
 	if (not x1) then error ("no start x value provided") end
 	if (not x2) then error ("no end x value provided") end
 	
-	print ("log: " .. tostring (log) .. " x1: " .. x1 .. "  x2: " .. x2)
+	--print ("log: " .. tostring (log) .. " x1: " .. x1 .. "  x2: " .. x2)
 
 	local xx = {}
 		
@@ -95,7 +95,7 @@ function Lab:plotj (i_uniqueIdOrName, i_coordinates, i_sampleRate, i_axesOptions
 		local yy = {}
 
 		for _,x in ipairs (xx) do
-			local w = x/i_sampleRate * math.pi
+			local w = x/i_sampleRate * math.pi * 2
 			
 			local y = i_coordinates (w);
 
@@ -136,7 +136,7 @@ function Lab:plot (i_uniqueIdOrName, i_coordinates, i_axesOptions, i_optionalInd
 		if (not x1) then error ("no start x value provided") end
 		if (not x2) then error ("no end x value provided") end
 	
-		print ("log: " .. tostring (log) .. " x1: " .. x1 .. "  x2: " .. x2)
+		--print ("log: " .. tostring (log) .. " x1: " .. x1 .. "  x2: " .. x2)
 
 		local xx, yy = {}, {}
 		
