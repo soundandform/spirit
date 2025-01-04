@@ -67,6 +67,8 @@ function Measure:FFTMagPhase (i_samples, i_sampleRate, i_options)
 
 			local i = math.floor (nextFreq / fstep)
 
+			if (i*2+1 > #ri) then break end
+
 			if (i ~= previ and i > 0) then
 
 				-- i = 1 refers to first fft bin which starts at ri [2] (r[1] is DC)

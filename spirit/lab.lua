@@ -227,6 +227,8 @@ end
 
 function Lab:tf (i_uniqueIdOrName, i_function, i_args)
 
+	i_args = i_args or {}
+
 	local dBStart = i_args ['dBMin'] or -44
 	local dBEnd   = i_args ['dBMax'] or .01
 	local dBStep = .1
@@ -267,7 +269,7 @@ function Lab:tf (i_uniqueIdOrName, i_function, i_args)
 		i_args ['x'] = { range, -range }
 		i_args ['y'] = { range, -range }
 
-		print (#yn)
+		--print (#yn)
 	else
 		
 		i_args ['x'] = { dBStart, dBEnd }
