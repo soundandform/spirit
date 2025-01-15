@@ -84,9 +84,9 @@ function Lab._generateXCoordinates (i_axesOptions)
 end
 
 
-function Lab:plotj (i_uniqueIdOrName, i_coordinates, i_sampleRate, i_axesOptions, i_optionalIndex)
+function Lab:plotj (i_function, i_sampleRate, i_axesOptions, i_optionalIndex)
 
-	if (type (i_coordinates) == 'function') then
+	if (type (i_function) == 'function') then
 
 		local xx = self._generateXCoordinates (i_axesOptions)
 
@@ -97,20 +97,25 @@ function Lab:plotj (i_uniqueIdOrName, i_coordinates, i_sampleRate, i_axesOptions
 		for _,x in ipairs (xx) do
 			local w = x/i_sampleRate * math.pi * 2
 			
-			local y = i_coordinates (w);
+			local y = i_function (w);
 
 			yy [#yy + 1] = convert:gainTodB (y)
 		
 		end
 
-		i_coordinates = { xx, yy }
+		i_function = { xx, yy }
 	end
 
-	sluggo_plot (i_uniqueIdOrName, i_coordinates, i_axesOptions, i_optionalIndex)
+	sluggo_plot (i_function, i_axesOptions, i_optionalIndex)
 end
 
 
-function Lab:plot (i_uniqueIdOrName, i_coordinates, i_axesOptions, i_optionalIndex)
+
+
+function Lab:plot (i_coordinates, i_axesOptions, i_optionalIndex)
+
+	i_optionalIndex = i_optionalIndex or self.index
+	i_optionalIndex = i_optionalIndex or 0
 
 	-- TODO: convert CArray i_coordinates to Tables
 
@@ -127,7 +132,7 @@ function Lab:plot (i_uniqueIdOrName, i_coordinates, i_axesOptions, i_optionalInd
 			if (value == 'log') then log = true 
 			elseif (value == 'lin') then log = false
 			elseif (type (value) == 'number') then
-				if (not x1) then x1 = value 
+				if (not x1) then x1 = value
 				elseif (not x2) then x2 = value
 				end
 			end
@@ -160,7 +165,11 @@ function Lab:plot (i_uniqueIdOrName, i_coordinates, i_axesOptions, i_optionalInd
 	end
 
 
-	sluggo_plot (i_uniqueIdOrName, i_coordinates, i_axesOptions, i_optionalIndex)
+	local p = { plot= self.plot2; index = i_optionalIndex + 1 }
+
+	sluggo_plot (i_coordinates, i_axesOptions, i_optionalIndex)
+
+	return p
 
 end
 
@@ -182,11 +191,6 @@ end
 
 
 
---[[ irsweep ()  displays the magnitude & phase response of 'i_function' by transforming its impulse response into the frequency domain using an FFT ]]--
-
-function Lab:irsweep (i_uniqueIdOrName, i_function, i_args, i_optionalIndex)
-	
-end
 
 
 
@@ -225,7 +229,7 @@ end
 
 
 
-function Lab:tf (i_uniqueIdOrName, i_function, i_args)
+function Lab:tf (i_function, i_args)
 
 	i_args = i_args or {}
 
@@ -276,7 +280,7 @@ function Lab:tf (i_uniqueIdOrName, i_function, i_args)
 		i_args ['y'] = { dBStart, dBEnd }
 	end
 
-	sluggo_plot (i_uniqueIdOrName, {x,y}, i_args, optionalIndex)	
+	sluggo_plot ({x,y}, i_args, optionalIndex)	
 	
 end
 

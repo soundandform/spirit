@@ -1,5 +1,7 @@
 -- std.lua
 
+local Array 	= require 'spirit.array'
+
 
 local Std = {}
 
@@ -69,6 +71,53 @@ function Std:isNaN (i_var)
 	return self._isNan (i_var)
 end
 
+
+function Std:getType (i_thingy)
+
+	local t = type (i_thingy)
+
+	if (type (i_thingy) == "userdata") then
+		t = getmetatable (i_thingy).__name
+	end
+
+
+	return t
+
+end
+
+
+function Std:isArray (i_thing)
+	local t = self:getType (i_thing)
+	local i = string.find (t, "Array <")
+
+	return (i == 1)
+end
+
+
+function Std:reverse (i_array)
+
+	local r
+
+	if (self:isArray (i_array)) then 
+		r = i_array:copy ()						-- could do Array:new (i_array:type (), #i_array) if type() implemented
+	elseif (type (i_array) == 'table') then
+		r = {}
+	else
+		error "can't reverse this data type"
+	end
+
+	for i = 1,#i_array do
+		r [i] = i_array [#i_array + 1 - i]
+	end
+
+	return r
+	
+end
+
+
+function Std:sleep (i_seconds)
+	sluggo_sleep (i_seconds)
+end
 
 
 return Std 

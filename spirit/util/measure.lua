@@ -29,6 +29,25 @@ end
 
 
 
+function Measure:magPhase (i_function, i_sampleRate, i_numSeconds) -- FIX: i_options
+	
+	i_numSeconds = i_numSeconds or .1
+	local numSamples = i_numSeconds * i_sampleRate
+
+	local ir = Array:new (numSamples)
+
+	local i = 1
+
+	for n = 1, numSamples do
+		ir [n] = i_function (i)
+		i = 0
+	end
+
+	
+	return self:FFTMagPhase (ir, i_sampleRate)
+end
+
+
 
 function Measure:FFTMagPhase (i_samples, i_sampleRate, i_options)
 
