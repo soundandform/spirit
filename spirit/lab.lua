@@ -1,12 +1,14 @@
 -- lab.lua
 
-local std = require ('spirit.std')
-local convert = require ('spirit.util.convert')
 require 'spirit.math.complex'
 
-local Lab = 
-{
-}
+local std			= require 'spirit.std'
+local convert 		= require 'spirit.util.convert'
+
+local Waveform 		= require 'spirit.ui.waveform'
+local Plot 			= require 'spirit.ui.plot'
+
+local Lab = {}
 
 
 function Lab:GetSourceInfo ()
@@ -29,166 +31,25 @@ end
 
 
 
+function  Lab:waveform  ()
 
+	local info = debug.getinfo (2, "lS")
 
+	local wf = Waveform:new (info.source, info.currentline)
 
-
-function  Lab:waveform  (i_uniqueIdOrName, i_source, i_layer)
-
-	sluggo_waveform (i_uniqueIdOrName, i_source, i_layer)
-
-end
-
-
-function Lab._generateXCoordinates (i_axesOptions)
-
-	local numPoints = i_axesOptions.numPoints or 2000
-
-	local log = false
-	local x1, x2 = nil,nil
-
-	local xaxis = i_axesOptions ['x']
-		
-	for _,value in ipairs (xaxis) do
-		if (value == 'log') then log = true 
-		elseif (value == 'lin') then log = false
-		elseif (type (value) == 'number') then
-			if (not x1) then x1 = value 
-			elseif (not x2) then x2 = value
-			end
-		end
-	end
-
-	if (not x1) then error ("no start x value provided") end
-	if (not x2) then error ("no end x value provided") end
-	
-	--print ("log: " .. tostring (log) .. " x1: " .. x1 .. "  x2: " .. x2)
-
-	local xx = {}
-		
-	for n=1,numPoints do
-
-		local x
-
-		if (log == true) then
-			x = convert:linearToLog (n-1, 0, numPoints - 1, x1, x2)
-		else
-			x = x1 + (x2 - x1) * (n - 1)/(numPoints - 1)
-		end
-
-		xx [#xx + 1] = x
-	end
-
-	return xx
+	return wf
 
 end
 
 
-function Lab:plotj (i_function, i_sampleRate, i_axesOptions, i_optionalIndex)
-
-	if (type (i_function) == 'function') then
-
-		local xx = self._generateXCoordinates (i_axesOptions)
 
 
+function  Lab:plot  (...)
 
-		local yy = {}
+	local info = debug.getinfo (2, "lS")
 
-		for _,x in ipairs (xx) do
-			local w = x/i_sampleRate * math.pi * 2
-			
-			local y = i_function (w);
-
-			yy [#yy + 1] = convert:gainTodB (y)
-		
-		end
-
-		i_function = { xx, yy }
-	end
-
-	sluggo_plot (i_function, i_axesOptions, i_optionalIndex)
+	return Plot:new (info.source, info.currentline)
 end
-
-
-
-
-function Lab:plot (i_coordinates, i_axesOptions, i_optionalIndex)
-
-	i_optionalIndex = i_optionalIndex or self.index
-	i_optionalIndex = i_optionalIndex or 0
-
-	-- TODO: convert CArray i_coordinates to Tables
-
-	if (type (i_coordinates) == 'function') then
-
-		local numPoints = 2000
-
-		local log = false
-		local x1, x2 = nil,nil
-
-		local xaxis = i_axesOptions ['x']
-		
-		for _,value in ipairs (xaxis) do
-			if (value == 'log') then log = true 
-			elseif (value == 'lin') then log = false
-			elseif (type (value) == 'number') then
-				if (not x1) then x1 = value
-				elseif (not x2) then x2 = value
-				end
-			end
-		end
-
-		if (not x1) then error ("no start x value provided") end
-		if (not x2) then error ("no end x value provided") end
-	
-		--print ("log: " .. tostring (log) .. " x1: " .. x1 .. "  x2: " .. x2)
-
-		local xx, yy = {}, {}
-		
-		for n=1,numPoints do
-
-			local x
-
-			if (log == true) then
-				x = convert:linearToLog (n-1, 0, numPoints - 1, x1, x2)
-			else
-				x = x1 + (x2 - x1) * (n - 1)/(numPoints - 1)
-			end
-
-			xx [#xx + 1] = x
-			yy [#yy + 1] = i_coordinates (x)
-
---			print (x)
-		end
-
-		i_coordinates = { xx, yy }
-	end
-
-
-	local p = { plot= self.plot2; index = i_optionalIndex + 1 }
-
-	sluggo_plot (i_coordinates, i_axesOptions, i_optionalIndex)
-
-	return p
-
-end
-
-
-function Lab:ir (i_uniqueIdOrName, i_function, i_args, i_optionalIndex)
-
-	local array = std:array (100)
-
-	for i = 1,#array do
-		array [i] = i
-	end
-
-	local ca = std:cArrayFromTable (array)
-
-	sluggo_array (ca)
-
---		sluggo_lab (func, 'sweep', i_args or {}, i_uniqueIdOrName)
-end
-
 
 
 
@@ -280,7 +141,10 @@ function Lab:tf (i_function, i_args)
 		i_args ['y'] = { dBStart, dBEnd }
 	end
 
-	sluggo_plot ({x,y}, i_args, optionalIndex)	
+	local info = debug.getinfo (2, "lS")
+
+
+	sluggo_plot (info.source, info.currentline, {x,y}, i_args, optionalIndex)	
 	
 end
 

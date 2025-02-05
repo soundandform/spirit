@@ -20,30 +20,34 @@ end
 
 
 
+
 function RatPoly:Render (i_x, i_coeffs)
 
 	i_coeffs = i_coeffs or self
 
-	local numerator, denominator = 0, 0;
 
+	local s = #i_coeffs.n
+	local numerator = i_coeffs.n [s]
 	local x = i_x
 
-	local s = #self.n
-	for i = 1,s do
-		numerator = numerator + x * i_coeffs.n [s + 1 - i]
+	for i = 1,s-1 do
+		numerator = numerator + x * i_coeffs.n [s - i]
 		x = x * i_x
 	end
 
+	s = #i_coeffs.d
+	local denominator = i_coeffs.d [s]
 	x = i_x
-	s = #self.d
-	for i = 1,s do
-		denominator = denominator + x * i_coeffs.d [s + 1 - i]
+
+	for i = 1,s-1 do
+		denominator = denominator + x * i_coeffs.d [s - i]
 		x = x * i_x
 	end
 
 	return numerator / denominator
 
 end
+
 
 
 

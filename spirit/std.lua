@@ -18,6 +18,7 @@ function  Std:array  (length)
 end
 
 
+
 function Std.checkVar (i_var, i_func)
 
 	local t = type (i_var)
@@ -72,6 +73,12 @@ function Std:isNaN (i_var)
 end
 
 
+function Std:nanInfCheck (i_var)
+	if (self:hasNaN (i_var)) then error ("has NaN") end
+	if (self:hasInf (i_var)) then error ("has infinity") end
+end
+
+
 function Std:getType (i_thingy)
 
 	local t = type (i_thingy)
@@ -115,9 +122,35 @@ function Std:reverse (i_array)
 end
 
 
+
+
 function Std:sleep (i_seconds)
 	sluggo_sleep (i_seconds)
 end
+
+
+
+function Std:zero (i_signal)
+	
+	if (self:isArray (i_signal)) then
+		return i_signal:zeroCopy ()
+	end
+
+end
+
+
+function Std:apply (i_signal, i_operator)
+
+	local out = self:zero (i_signal)
+
+	for i = 1, #i_signal do
+		out [i] = i_operator (i_signal [i])
+	end
+
+
+	return out
+end
+
 
 
 return Std 
